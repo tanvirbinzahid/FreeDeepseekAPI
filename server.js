@@ -180,7 +180,7 @@ function printBanner() {
 ██      ██   ██ ██      ██      ██   ██ ██      ██      ██      ██  ██
 ██      ██   ██ ███████ ███████ ██████  ███████ ███████ ███████ ██   ██
 
-   FreeDeepseekAPI — API-прокси для DeepSeek Web Chat
+   FreeDeepseekAPI — API proxy for DeepSeek Web Chat
    ${formatWatermark()}
 `);
 }
@@ -3325,11 +3325,11 @@ async function runAuthScript() {
 
 function printStatus() {
     console.log(`\n${formatWatermark()}`);
-    console.log(`Auth: ${hasAuthConfig() ? '✅ OK' : '❌ не найден deepseek-auth.json'}`);
+    console.log(`Auth: ${hasAuthConfig() ? '✅ OK' : '❌ deepseek-auth.json not found'}`);
     console.log(`Auth source: ${process.env.DEEPSEEK_AUTH_DIR || DS_CONFIG_PATH}`);
-    console.log(`Аккаунты: ${accounts.length ? accounts.map(a => `${a.id}${a.cooldownUntil > Date.now() ? ' (cooldown)' : ''}`).join(', ') : 'нет'}`);
-    console.log(`Рабочие модели: ${SUPPORTED_MODEL_IDS.join(', ')}`);
-    console.log('Нерабочие/скрытые aliases: ' + Object.keys(MODEL_CONFIGS).filter(id => !MODEL_CONFIGS[id].supported).join(', '));
+    console.log(`Accounts: ${accounts.length ? accounts.map(a => `${a.id}${a.cooldownUntil > Date.now() ? ' (cooldown)' : ''}`).join(', ') : 'none'}`);
+    console.log(`Working models: ${SUPPORTED_MODEL_IDS.join(', ')}`);
+    console.log('Non-working/hidden aliases: ' + Object.keys(MODEL_CONFIGS).filter(id => !MODEL_CONFIGS[id].supported).join(', '));
     console.log('Capabilities: GET /v1/model-capabilities');
 }
 
@@ -3340,14 +3340,14 @@ async function showStartupMenu() {
     }
     while (true) {
         printStatus();
-        console.log('\n=== Меню ===');
+        console.log('\n=== Menu ===');
         console.log(`ForgetMeAI: ${FORGETMEAI_WATERMARK}`);
-        console.log('1 - Авторизоваться / обновить DeepSeek login');
-        console.log('2 - Импортировать auth-файл / cookies');
-        console.log('3 - Показать модели и статусы');
-        console.log('4 - Запустить прокси (по умолчанию)');
-        console.log('5 - Выход');
-        let choice = await prompt('Ваш выбор (Enter = 4): ');
+        console.log('1 - Log in / refresh DeepSeek login');
+        console.log('2 - Import auth file / cookies');
+        console.log('3 - Show models and statuses');
+        console.log('4 - Start proxy (default)');
+        console.log('5 - Exit');
+        let choice = await prompt('Your choice (Enter = 4): ');
         if (!choice) choice = '4';
         if (choice === '1') {
             await runAuthScript();
@@ -3356,10 +3356,10 @@ async function showStartupMenu() {
             loadDeepSeekConfig({ fatal: false });
         } else if (choice === '3') {
             console.log(JSON.stringify(ALL_MODEL_CAPABILITIES, null, 2));
-            await prompt('\nНажмите Enter, чтобы вернуться в меню...');
+            await prompt('\nPress Enter to return to the menu...');
         } else if (choice === '4') {
             if (!hasAuthConfig()) {
-                console.log('Нужен deepseek-auth.json. Запустите пункт 1 или 2.');
+                console.log('deepseek-auth.json is required. Run option 1 or 2.');
                 continue;
             }
             return true;
