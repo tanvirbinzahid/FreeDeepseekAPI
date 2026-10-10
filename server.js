@@ -2278,9 +2278,13 @@ function extractScreenshotPaths(messages) {
         if (!content) continue;
         if (msg.role === 'tool') {
             // screenshot_path/path fields come directly from browser_vision.
+            // Accept POSIX (/tmp/..) and Windows (C:\..) absolute paths, and
+            // unescape JSON \\ sequences from stringified tool output.
+            const isAbsolutePath = (p) => /^(\/|[A-Za-z]:[\\/])/.test(p);
+            const unescapeJson = (p) => p.replace(/\\\\/g, '\\');
             const pngMatch = content.match(/["'](screenshot_path|path)["']\s*:\s*["']([^"']+\.(?:png|jpg|jpeg|webp|gif))["']/i);
-            if (pngMatch && pngMatch[2].startsWith('/')) addPath(pngMatch[2]);
-            for (const tag of content.match(/MEDIA:(\S+)/g) || []) addPath(tag.replace(/^MEDIA:/, ''));
+            if (pngMatch && isAbsolutePath(pngMatch[2])) addPath(unescapeJson(pngMatch[2]));
+            for (const tag of content.match(/MEDIA:(\S+)/g) || []) addPath(unescapeJson(tag.replace(/^MEDIA:/, '')));
         }
         if (msg.role === 'user' || msg.role === 'assistant') {
             const pathRegex = /(\/[^\s<>"']+\.(?:png|jpg|jpeg|webp|gif))/gi;
